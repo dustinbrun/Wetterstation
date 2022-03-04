@@ -1,0 +1,1650 @@
+[
+    {
+        "id": "d3ca8384.37e118",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "rtl_433/172/temperature_C",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 200,
+        "y": 420,
+        "wires": [
+            [
+                "80a65e52.86759"
+            ]
+        ]
+    },
+    {
+        "id": "4191850c.80a284",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "rtl_433/172/humidity",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 170,
+        "y": 500,
+        "wires": [
+            [
+                "b37a161c.fcd9d"
+            ]
+        ]
+    },
+    {
+        "id": "5fc4ebb6.d73924",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "rtl_433/172/wind_dir_deg",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 170,
+        "y": 1180,
+        "wires": [
+            [
+                "877c91d6.50b2f8"
+            ]
+        ]
+    },
+    {
+        "id": "8416fcd5.454c68",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "rtl_433/172/wind_avg_m_s",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 170,
+        "y": 1400,
+        "wires": [
+            [
+                "69c1a305.442864"
+            ]
+        ]
+    },
+    {
+        "id": "b239c78f.f0f78",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "rtl_433/172/wind_max_m_s",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 180,
+        "y": 1500,
+        "wires": [
+            [
+                "67d40285.0349a4"
+            ]
+        ]
+    },
+    {
+        "id": "aee03a48.f3c4c8",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Taupunkt berechnen (°C)",
+        "func": "//Quelle: https://myscope.net/taupunkttemperatur/\n\nvar calcdewpoint = function(celsius, humidity) {\n\n  var a, b;\n  if (celsius >= 0) {\n    a = 7.5;\n    b = 237.3;\n  } else if (celsius < 0) {\n    a = 7.6;\n    b = 240.7;\n  }\n\n  // Sättigungsdampfdruck (hPa)\n  var sdd = 6.1078 * Math.pow(10, (a * celsius) / (b + celsius));\n\n  // Dampfdruck (hPa)\n  var dd = sdd * (humidity / 100);\n\n  // v-Parameter\n  var v = Math.log10(dd / 6.1078);\n\n  // Taupunkttemperatur (°C)\n  var td = (b * v) / (a - v);\n  \n  //Runden 1 Nachkommastelle\n  td =  Math.round(td * 10) / 10;\n  \n  return td;\n}\n\nmsg.payload = calcdewpoint(parseFloat(global.get(\"Temperatur_Bresser\")), parseFloat(global.get(\"Luftfeuchte_Bresser\")));\n\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1610,
+        "y": 700,
+        "wires": [
+            [
+                "c7363d81.8c8b4",
+                "e52715fe.b9702"
+            ]
+        ]
+    },
+    {
+        "id": "49939cf0.ba107c",
+        "type": "delay",
+        "z": "199a2494.d44483",
+        "name": "",
+        "pauseType": "delay",
+        "timeout": "1",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "x": 1240,
+        "y": 760,
+        "wires": [
+            [
+                "aee03a48.f3c4c8",
+                "97086b92.1b9c08",
+                "4f2c0771.d273d8",
+                "2f685a95.9a24e6",
+                "38c10a6d.ba730e"
+            ]
+        ]
+    },
+    {
+        "id": "97086b92.1b9c08",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Gefühlte Temperatur berechnen (°C)",
+        "func": "\n//Quelle:   https://myscope.net/windchill-gefuehlte-temperatur-berechnen/\n//          https://de.wikipedia.org/wiki/Windchill\nvar calcwindchill = function(celsius, windspeed) {\n  var windchill = 13.12 + 0.6215 * celsius - 11.37 * Math.pow(windspeed, 0.16) + 0.3965 * celsius * Math.pow(windspeed, 0.16);\n  return windchill;\n}\n\n//Quelle:   https://myscope.net/hitzeindex-gefuehle-temperatur/\n//          https://de.wikipedia.org/wiki/Hitzeindex\nvar calcheatindex = function(celsius, humidity) {\n  return (-8.784695 + 1.61139411 * celsius + 2.338549 * humidity - 0.14611605 * celsius * humidity - 0.012308094 * celsius * celsius - 0.016424828 * humidity * humidity + 0.002211732 * celsius * celsius * humidity + 0.00072546 * celsius * humidity * humidity - 0.000003582 * celsius * celsius * humidity * humidity);\n}\n\nvar Temperatur_2m = parseFloat(global.get(\"Temperatur_Bresser\"));\nvar Luftfeuchte_rel = parseFloat(global.get(\"Luftfeuchte_Bresser\"));\nvar windkmh = parseFloat(global.get(\"Wind_kmh_10min_Bresser\"));\n\nif (Temperatur_2m <= 10 && windkmh >= 4.8) \n{\n   msg.payload = calcwindchill(Temperatur_2m, windkmh);\n   msg.topic = \"123\";\n}\nelse if (Temperatur_2m >= 26.7 && Luftfeuchte_rel >= 40) \n{\n   msg.payload = calcheatindex(Temperatur_2m, Luftfeuchte_rel);\n   msg.topic = \"246\";\n}\nelse //Keine der beiden Formeln ist definiert\n{\n   //msg.payload = -1;\n   msg.payload = Temperatur_2m;\n}\n \n//Runden 1 Nachkommastelle\nmsg.payload =  Math.round(msg.payload * 10) / 10;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1650,
+        "y": 760,
+        "wires": [
+            [
+                "9a55cc4c.f15f48"
+            ]
+        ]
+    },
+    {
+        "id": "39227a60.41774e",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "in km/h",
+        "func": "//Runden 1 Nachkommastelle und *3.6\n\nmsg.payload =  Math.round(msg.payload * 3.6 * 10) / 10;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 600,
+        "y": 1400,
+        "wires": [
+            [
+                "341cfe64.27c68a",
+                "963932e3.0adc28"
+            ]
+        ]
+    },
+    {
+        "id": "4f2c0771.d273d8",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Absolute Luftfeuchtigkeit berechnen (g/m^3)",
+        "func": "\n// Relative to absolute humidity\n// Based on https://carnotcycle.wordpress.com/2012/08/04/how-to-convert-relative-humidity-to-absolute-humidity/\nvar absoluteHumidity = function(temperature, humidity) {\n  return (13.2471*Math.pow(2.7182818,17.67*temperature/(temperature+243.5))*humidity/(273.15+temperature));\n}\n\nvar Temperatur_2m = parseFloat(global.get(\"Temperatur_Bresser\"));\nvar Luftfeuchte_rel = parseFloat(global.get(\"Luftfeuchte_Bresser\"));\n\nmsg.payload = absoluteHumidity(Temperatur_2m, Luftfeuchte_rel);\n\n//Runden 1 Nachkommastelle\nmsg.payload =  Math.round(msg.payload * 10) / 10;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1670,
+        "y": 820,
+        "wires": [
+            [
+                "ebcfdb2b.8317e"
+            ]
+        ]
+    },
+    {
+        "id": "add19758.e17278",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Wind (km/h) in Wort und bft umwandeln",
+        "func": "var windmax = parseFloat(msg.payload) / 3.6;\n\nvar windstarkewort = {};\nwindstarkewort.topic = \"Windstärke_Wort\";\n\nvar windstarkebft = {};\nwindstarkebft.topic = \"Windstärke_bft\";\n\nif (windmax < 0.3) {\n    windstarkebft.payload = 0;\n    windstarkewort.payload = \"Windstille\";\n  }\n  else if (windmax >= 0.3 && windmax < 1.6) {\n    windstarkebft.payload = 1;\n    windstarkewort.payload = \"leiser Zug\";\n  }\n  else if (windmax >= 1.6 && windmax < 3.4 ) {\n    windstarkebft.payload = 2;\n    windstarkewort.payload = \"leichte Brise\";\n  }\n  else if (windmax >= 3.4 && windmax < 5.5) {\n    windstarkebft.payload = 3;\n    windstarkewort.payload = \"schwache Brise\";\n  }\n  else if (windmax >= 5.5 && windmax < 8.0 ) {\n    windstarkebft.payload = 4;\n    windstarkewort.payload = \"mäßige Brise\";\n  }\n  else if (windmax >= 8.0 && windmax < 10.8 ) {\n    windstarkebft.payload = 5;\n    windstarkewort.payload = \"frische Brise\";\n  }\n  else if (windmax >= 10.8 && windmax < 13.9 ) {\n    windstarkebft.payload = 6;\n    windstarkewort.payload = \"starker Wind\";\n  }\n  else if (windmax >= 13.9 && windmax < 17.2 ) {\n    windstarkebft.payload = 7;\n    windstarkewort.payload = \"steifer Wind\";\n  }\n  else if (windmax >= 17.2 && windmax < 20.8 ) {\n    windstarkebft.payload = 8;\n    windstarkewort.payload = \"stürmischer Wind\";\n  }\n  else if (windmax >= 20.8 && windmax < 24.5 ) {\n    windstarkebft.payload = 9;\n    windstarkewort.payload = \"Sturm\";\n  }\n  else if (windmax >= 24.5 && windmax < 28.5 ) {\n    windstarkebft.payload = 10;\n    windstarkewort.payload = \"schwerer Sturm\";\n  }\n  else if (windmax >= 28.5 && windmax < 32.7 ) {\n    windstarkebft.payload = 11;\n    windstarkewort.payload = \"orkanartiger Sturm\";\n  }\n  else if (windmax >= 32.7) {\n    windstarkebft.payload = 12;\n    windstarkewort.payload = \"Sturm\";\n  }\n\n\nreturn [windstarkewort, windstarkebft];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 1240,
+        "y": 1580,
+        "wires": [
+            [
+                "fafdb2ed.83711"
+            ],
+            [
+                "3e740b7d.c55024"
+            ]
+        ],
+        "outputLabels": [
+            "Wort",
+            "bft"
+        ]
+    },
+    {
+        "id": "9d684adf.b3eb9",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Windrichtung (°) in Wort umwandeln",
+        "func": "var windrichtung = parseInt(msg.payload);\n\nvar windrichtungwort = {};\nwindrichtungwort.topic = \"Windrichtung_Wort\";\n\n\nif (windrichtung >= 348 &&  windrichtung < 12) {\n    windrichtungwort.payload = \"N\";\n  }\n  else if (windrichtung >= 12 && windrichtung < 35) {\n    windrichtungwort.payload = \"NNO\";\n  }\n  else if (windrichtung >= 35 && windrichtung < 57) {\n    windrichtungwort.payload = \"NO\";\n  }\n  else if (windrichtung >= 57 && windrichtung < 80) {\n    windrichtungwort.payload = \"NOO\";\n  }\n  else if (windrichtung >= 80 && windrichtung < 102) {\n    windrichtungwort.payload = \"O\";\n  }\n  else if (windrichtung >= 102 && windrichtung < 125) {\n    windrichtungwort.payload = \"SOO\";\n  }\n  else if (windrichtung >= 125 && windrichtung < 147) {\n    windrichtungwort.payload = \"SO\";\n  }\n  else if (windrichtung >= 147 && windrichtung < 170) {\n    windrichtungwort.payload = \"SSO\";\n  }\n  else if (windrichtung >= 170 && windrichtung < 192) {\n    windrichtungwort.payload = \"S\";\n  }\n  else if (windrichtung >= 192 && windrichtung < 215) {\n    windrichtungwort.payload = \"SSW\";\n  }\n  else if (windrichtung >= 215 && windrichtung < 237) {\n    windrichtungwort.payload = \"SW\";\n  }\n  else if (windrichtung >= 237 && windrichtung < 260) {\n    windrichtungwort.payload = \"SWW\";\n  }\n  else if (windrichtung >= 260 && windrichtung < 282) {\n    windrichtungwort.payload = \"W\";\n  }\n  else if (windrichtung >= 282 && windrichtung < 305) {\n    windrichtungwort.payload = \"NWW\";\n  }\n  else if (windrichtung >= 305 && windrichtung < 327) {\n    windrichtungwort.payload = \"NW\";\n  }\n  else if (windrichtung >= 327 && windrichtung < 348) {\n    windrichtungwort.payload = \"NNW\";\n  }\n  else {\n    windrichtungwort.payload = \"???\";\n  }\n\nreturn windrichtungwort;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 690,
+        "y": 1280,
+        "wires": [
+            [
+                "3c90d4d6.84584c",
+                "7b8b407f.02c5a8"
+            ]
+        ],
+        "outputLabels": [
+            "Wort"
+        ]
+    },
+    {
+        "id": "80a65e52.86759",
+        "type": "change",
+        "z": "199a2494.d44483",
+        "name": "Str to Num + Topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "temp_Bresser",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 420,
+        "wires": [
+            [
+                "341cfe64.27c68a"
+            ]
+        ]
+    },
+    {
+        "id": "b37a161c.fcd9d",
+        "type": "change",
+        "z": "199a2494.d44483",
+        "name": "Str to Num + Topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "humidity_Bresser",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 490,
+        "y": 500,
+        "wires": [
+            [
+                "341cfe64.27c68a"
+            ]
+        ]
+    },
+    {
+        "id": "69c1a305.442864",
+        "type": "change",
+        "z": "199a2494.d44483",
+        "name": "Str to Num + Topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "wind_avg_Bresser",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 410,
+        "y": 1400,
+        "wires": [
+            [
+                "39227a60.41774e"
+            ]
+        ]
+    },
+    {
+        "id": "67d40285.0349a4",
+        "type": "change",
+        "z": "199a2494.d44483",
+        "name": "Str to Num + Topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "wind_max_Bresser",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 410,
+        "y": 1500,
+        "wires": [
+            [
+                "3512b6e8.1bedba"
+            ]
+        ]
+    },
+    {
+        "id": "877c91d6.50b2f8",
+        "type": "change",
+        "z": "199a2494.d44483",
+        "name": "Str to Num + Topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "wind_dir_Bresser",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 410,
+        "y": 1180,
+        "wires": [
+            [
+                "9d684adf.b3eb9",
+                "46c57b66.607724",
+                "341cfe64.27c68a",
+                "a10f98b.29a2768",
+                "22ee949c.098b5c"
+            ]
+        ]
+    },
+    {
+        "id": "da27693.de58618",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "rtl_433/#",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 140,
+        "y": 360,
+        "wires": [
+            [
+                "e35797c8.af7488"
+            ]
+        ]
+    },
+    {
+        "id": "e35797c8.af7488",
+        "type": "debug",
+        "z": "199a2494.d44483",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 470,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "4209f5b.074ca0c",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "rtl_433/172/rain_mm",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 150,
+        "y": 1780,
+        "wires": [
+            [
+                "1e42eb82.cff744"
+            ]
+        ]
+    },
+    {
+        "id": "1e42eb82.cff744",
+        "type": "change",
+        "z": "199a2494.d44483",
+        "name": "Str to Num + Topic",
+        "rules": [
+            {
+                "t": "set",
+                "p": "payload",
+                "pt": "msg",
+                "to": "$number(payload)",
+                "tot": "jsonata"
+            },
+            {
+                "t": "set",
+                "p": "topic",
+                "pt": "msg",
+                "to": "rain_mm_Bresser",
+                "tot": "str"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 410,
+        "y": 1780,
+        "wires": [
+            [
+                "7f870b19.89622c"
+            ]
+        ]
+    },
+    {
+        "id": "341cfe64.27c68a",
+        "type": "calculate",
+        "z": "199a2494.d44483",
+        "name": "10 Minuten Durchschnitt",
+        "pauseType": "timed",
+        "calculation": "average",
+        "timeout": "10",
+        "timeoutUnits": "minutes",
+        "rate": "10",
+        "x": 810,
+        "y": 460,
+        "wires": [
+            [
+                "3f1feb1f.260b64"
+            ]
+        ]
+    },
+    {
+        "id": "3f1feb1f.260b64",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "runden",
+        "func": "//Runden 1 Nachkommastelle\nmsg.payload =  Math.round(msg.payload * 10) / 10;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1020,
+        "y": 460,
+        "wires": [
+            [
+                "960e35aa.265a98"
+            ]
+        ]
+    },
+    {
+        "id": "ee710eac.efa0d",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Temperatur_Bresser Variable schreiben",
+        "func": "global.set(\"Temperatur_Bresser\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1660,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "960e35aa.265a98",
+        "type": "switch",
+        "z": "199a2494.d44483",
+        "name": "topics trennen",
+        "property": "topic",
+        "propertyType": "msg",
+        "rules": [
+            {
+                "t": "eq",
+                "v": "temp_Bresser",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "humidity_Bresser",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "wind_dir_Bresser",
+                "vt": "str"
+            },
+            {
+                "t": "eq",
+                "v": "wind_avg_Bresser",
+                "vt": "str"
+            }
+        ],
+        "checkall": "true",
+        "repair": false,
+        "outputs": 4,
+        "x": 1220,
+        "y": 460,
+        "wires": [
+            [
+                "ee710eac.efa0d",
+                "4f5132b0.5b63ac",
+                "49ed1cfc.c5bbe4",
+                "49939cf0.ba107c"
+            ],
+            [
+                "5d216762.ec5fb8",
+                "12046eec.09e511",
+                "2a5b6588.fca1da",
+                "3dc3fd5f.6d6a82"
+            ],
+            [
+                "88b65228.1a1ed8",
+                "4a76a8aa.2a864"
+            ],
+            [
+                "7cb4e1ab.fecf68",
+                "331f012a.0b21d6",
+                "b91b4ae0.6e4aa8"
+            ]
+        ]
+    },
+    {
+        "id": "5d216762.ec5fb8",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Luftfeuchte_Bresser Variable schreiben",
+        "func": "global.set(\"Luftfeuchte_Bresser\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1660,
+        "y": 580,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4f5132b0.5b63ac",
+        "type": "ui_chart",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "6d9811b9.aafee",
+        "order": 2,
+        "width": "6",
+        "height": "5",
+        "label": "Letzte 24 Stunden",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#00ffff",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 1590,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9a55cc4c.f15f48",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "3d91d558.b0b642",
+        "order": 2,
+        "width": "3",
+        "height": "2",
+        "gtype": "gage",
+        "title": "Gefühlte Temperatur",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": "-30",
+        "max": "50",
+        "colors": [
+            "#2701fe",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "0",
+        "seg2": "30",
+        "x": 2000,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "c7363d81.8c8b4",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "3d91d558.b0b642",
+        "order": 3,
+        "width": "3",
+        "height": "2",
+        "gtype": "gage",
+        "title": "Taupunkt",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": "-30",
+        "max": "50",
+        "colors": [
+            "#2701fe",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "0",
+        "seg2": "30",
+        "x": 1960,
+        "y": 700,
+        "wires": []
+    },
+    {
+        "id": "ebcfdb2b.8317e",
+        "type": "ui_text",
+        "z": "199a2494.d44483",
+        "group": "be69e0ff.5c8f3",
+        "order": 3,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "label": "Absolute Luftfeuchte g/m³",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 2010,
+        "y": 820,
+        "wires": []
+    },
+    {
+        "id": "d259eb08.ebf568",
+        "type": "ui_text",
+        "z": "199a2494.d44483",
+        "group": "4d0d0eb6.cfdf1",
+        "order": 3,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "label": "Bresser Letzte Nachricht",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 650,
+        "y": 1860,
+        "wires": []
+    },
+    {
+        "id": "12301ad9.a4bc05",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "rtl_433/172/time",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 140,
+        "y": 1860,
+        "wires": [
+            [
+                "687e718a.7700b"
+            ]
+        ]
+    },
+    {
+        "id": "12046eec.09e511",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "Luftfeuchte",
+        "group": "be69e0ff.5c8f3",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "gtype": "gage",
+        "title": "",
+        "label": "%",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "100",
+        "colors": [
+            "#ff8000",
+            "#ff8000",
+            "#ff8000"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 1570,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "2a5b6588.fca1da",
+        "type": "ui_chart",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "9e770773.d8a92",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Letzte 24 Stunden",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#ff8000",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 1590,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "49ed1cfc.c5bbe4",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "17baa071.c57db8",
+        "name": "",
+        "measurement": "Temperatur_Bresser",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 1670,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "963932e3.0adc28",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "30d719a6.8689be",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "gtype": "gage",
+        "title": "Windgeschwindigkeit",
+        "label": "km/h",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "100",
+        "colors": [
+            "#00ff40",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 780,
+        "y": 1400,
+        "wires": []
+    },
+    {
+        "id": "7cb4e1ab.fecf68",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Wind_kmh_10min_Bresser Variable schreiben",
+        "func": "global.set(\"Wind_kmh_10min_Bresser\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1680,
+        "y": 1420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "331f012a.0b21d6",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "17baa071.c57db8",
+        "name": "",
+        "measurement": "Wind_kmh",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 1640,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "b91b4ae0.6e4aa8",
+        "type": "ui_chart",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "4ec81a48.48104c",
+        "order": 6,
+        "width": 0,
+        "height": 0,
+        "label": "Letzte 24 Stunden km/h",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#ff0000",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 1610,
+        "y": 1380,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3512b6e8.1bedba",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "in km/h",
+        "func": "//Runden 1 Nachkommastelle und *3.6\n\nmsg.payload =  Math.round(msg.payload * 3.6 * 10) / 10;\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 600,
+        "y": 1500,
+        "wires": [
+            [
+                "fa956745.9f4dd",
+                "5ee7357e.918624"
+            ]
+        ]
+    },
+    {
+        "id": "fa956745.9f4dd",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "30d719a6.8689be",
+        "order": 3,
+        "width": "3",
+        "height": "2",
+        "gtype": "gage",
+        "title": "Windböen",
+        "label": "km/h",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "100",
+        "colors": [
+            "#00ff40",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 750,
+        "y": 1560,
+        "wires": []
+    },
+    {
+        "id": "5ee7357e.918624",
+        "type": "calculate",
+        "z": "199a2494.d44483",
+        "name": "10 Minuten Maximum",
+        "pauseType": "timed",
+        "calculation": "max",
+        "timeout": "10",
+        "timeoutUnits": "minutes",
+        "rate": "10",
+        "x": 780,
+        "y": 1500,
+        "wires": [
+            [
+                "d5b01530.e810f"
+            ]
+        ]
+    },
+    {
+        "id": "d5b01530.e810f",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "runden",
+        "func": "//Runden 1 Nachkommastelle\nmsg.payload =  Math.round(msg.payload * 10) / 10;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 980,
+        "y": 1500,
+        "wires": [
+            [
+                "b91b4ae0.6e4aa8",
+                "add19758.e17278",
+                "c8cec4c9.f1016"
+            ]
+        ]
+    },
+    {
+        "id": "c8cec4c9.f1016",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "17baa071.c57db8",
+        "name": "",
+        "measurement": "Wind_kmh_max",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 1230,
+        "y": 1500,
+        "wires": []
+    },
+    {
+        "id": "3e740b7d.c55024",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "Windstärke bft",
+        "group": "30d719a6.8689be",
+        "order": 5,
+        "width": "3",
+        "height": "2",
+        "gtype": "gage",
+        "title": "Windstärke",
+        "label": "bft",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "12",
+        "colors": [
+            "#00ff40",
+            "#ff8000",
+            "#ff00ff"
+        ],
+        "seg1": "4",
+        "seg2": "10",
+        "x": 1580,
+        "y": 1600,
+        "wires": []
+    },
+    {
+        "id": "fafdb2ed.83711",
+        "type": "ui_text",
+        "z": "199a2494.d44483",
+        "group": "30d719a6.8689be",
+        "order": 4,
+        "width": "0",
+        "height": "0",
+        "name": "Windstärke Wort",
+        "label": "Windstärke",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 1590,
+        "y": 1560,
+        "wires": []
+    },
+    {
+        "id": "46c57b66.607724",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "Windrichtung Kompass",
+        "group": "30d719a6.8689be",
+        "order": 7,
+        "width": "6",
+        "height": "4",
+        "gtype": "compass",
+        "title": "Windrichtung <br><b><center> N </center></b>",
+        "label": "",
+        "format": "{{value}}°",
+        "min": "0",
+        "max": "360",
+        "colors": [
+            "#00ff40",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 810,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "4a76a8aa.2a864",
+        "type": "ui_chart",
+        "z": "199a2494.d44483",
+        "name": "Windrichtung Letzte 24 Stunden",
+        "group": "4ec81a48.48104c",
+        "order": 9,
+        "width": "6",
+        "height": "5",
+        "label": "Windrichtung",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "0",
+        "ymax": "360",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#ff8000",
+            "#0080ff",
+            "#ff0000",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 1630,
+        "y": 1080,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3c90d4d6.84584c",
+        "type": "ui_text",
+        "z": "199a2494.d44483",
+        "group": "30d719a6.8689be",
+        "order": 8,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "label": "Himmelsrichtung",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 980,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "7b8b407f.02c5a8",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Windr_wort_Bresser Variable schreiben",
+        "func": "global.set(\"Windr_wort_Bresser\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1060,
+        "y": 1320,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "22ee949c.098b5c",
+        "type": "calculate",
+        "z": "199a2494.d44483",
+        "name": "10 Minuten Minimum",
+        "pauseType": "timed",
+        "calculation": "min",
+        "timeout": "10",
+        "timeoutUnits": "minutes",
+        "rate": "10",
+        "x": 800,
+        "y": 1200,
+        "wires": [
+            [
+                "2deb55ab.8be922"
+            ]
+        ]
+    },
+    {
+        "id": "a10f98b.29a2768",
+        "type": "calculate",
+        "z": "199a2494.d44483",
+        "name": "10 Minuten Maximum",
+        "pauseType": "timed",
+        "calculation": "max",
+        "timeout": "10",
+        "timeoutUnits": "minutes",
+        "rate": "10",
+        "x": 800,
+        "y": 1160,
+        "wires": [
+            [
+                "458aef6c.4e3d6"
+            ]
+        ]
+    },
+    {
+        "id": "458aef6c.4e3d6",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "runden + Topic",
+        "func": "//Runden 1 Nachkommastelle\nmsg.payload =  Math.round(msg.payload * 10) / 10;\nmsg.topic = \"wind_dir_max\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1020,
+        "y": 1160,
+        "wires": [
+            [
+                "1cb0de67.9432d2",
+                "4a76a8aa.2a864"
+            ]
+        ]
+    },
+    {
+        "id": "2deb55ab.8be922",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "runden + Topic",
+        "func": "//Runden 1 Nachkommastelle\nmsg.payload =  Math.round(msg.payload * 10) / 10;\nmsg.topic = \"wind_dir_min\";\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1020,
+        "y": 1200,
+        "wires": [
+            [
+                "f18dfaf0.fed0f8",
+                "4a76a8aa.2a864"
+            ]
+        ]
+    },
+    {
+        "id": "1cb0de67.9432d2",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "17baa071.c57db8",
+        "name": "",
+        "measurement": "Wind_Richtung_Max",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 1670,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "f18dfaf0.fed0f8",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "17baa071.c57db8",
+        "name": "",
+        "measurement": "Wind_Richtung_Min",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 1670,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "88b65228.1a1ed8",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "17baa071.c57db8",
+        "name": "",
+        "measurement": "Wind_Richtung_Avg",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 1670,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "8af69694.23b5c",
+        "type": "comment",
+        "z": "199a2494.d44483",
+        "name": "Art des Messwertes",
+        "info": "Gesendete Regenmenge ist GESAMTMENGE seit dem letzten Reset der Wetterstation. -> Auswertung der Differenzwerte",
+        "x": 150,
+        "y": 1740,
+        "wires": []
+    },
+    {
+        "id": "7f870b19.89622c",
+        "type": "delay",
+        "z": "199a2494.d44483",
+        "name": "1 Nachricht pro Minute",
+        "pauseType": "rate",
+        "timeout": "5",
+        "timeoutUnits": "seconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "minute",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": true,
+        "x": 640,
+        "y": 1780,
+        "wires": [
+            [
+                "f8592001.4e8f1"
+            ]
+        ]
+    },
+    {
+        "id": "f8592001.4e8f1",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Regen_Summe_aktuell Variable schreiben",
+        "func": "global.set(\"Regen_Summe_aktuell\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 930,
+        "y": 1780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "2f685a95.9a24e6",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Regenmenge auswerten",
+        "func": "\nvar regenmenge = parseFloat(global.get(\"Regen_Summe_aktuell\")) - parseFloat(global.get(\"Regen_Summe_letzte\"));\n\nglobal.set(\"Regen_Summe_letzte\", global.get(\"Regen_Summe_aktuell\"));\n\nif(regenmenge < 0 || regenmenge > 50) //Keine Ausgabe bei Offensichtlich falschen Werten\n{\n    regenmenge = 0;\n}\nelse\n{\n    var output = {};\n    output.topic = \"Regen_Bresser\";\n    output.payload = parseFloat(regenmenge);\n\n    return output;\n}\n\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1610,
+        "y": 880,
+        "wires": [
+            [
+                "aff85f7d.ce0928"
+            ]
+        ]
+    },
+    {
+        "id": "fa96407b.05dd4",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "580799fe.f1c69",
+        "order": 2,
+        "width": "6",
+        "height": "4",
+        "gtype": "wave",
+        "title": "mm letzte 10 Minuten",
+        "label": "",
+        "format": "{{value}}°",
+        "min": "0",
+        "max": "10",
+        "colors": [
+            "#00ff40",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 2000,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "480b62d5.dc63dc",
+        "type": "ui_chart",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "39eba35.13c6edc",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Letzte 24 Stunden",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 1990,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3dc3fd5f.6d6a82",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "17baa071.c57db8",
+        "name": "",
+        "measurement": "Luftfeuchte_Bresser",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 1670,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "b7f019c2.117be8",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "17baa071.c57db8",
+        "name": "",
+        "measurement": "Regen_Bresser",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 2050,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "687e718a.7700b",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Uhrzeit extrahieren",
+        "func": "msg.payload =  msg.payload.substr(msg.payload.indexOf(\"T\") + 1);\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 410,
+        "y": 1860,
+        "wires": [
+            [
+                "d259eb08.ebf568"
+            ]
+        ]
+    },
+    {
+        "id": "aff85f7d.ce0928",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "runden",
+        "func": "//Runden 3 Nachkommastellen\nmsg.payload =  Math.round(msg.payload * 1000) / 1000;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1800,
+        "y": 880,
+        "wires": [
+            [
+                "fa96407b.05dd4",
+                "480b62d5.dc63dc",
+                "b7f019c2.117be8"
+            ]
+        ]
+    },
+    {
+        "id": "38c10a6d.ba730e",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Zeitstempel erzeugen",
+        "func": "//Source: https://stackoverflow.com/questions/5416920/timestamp-to-human-readable-format\n\nvar date = new Date();\n\nvar hour = date.getHours();\nvar min = date.getMinutes();\nvar sec = date.getSeconds();\n\nhour = (hour < 10 ? \"0\" : \"\") + hour;\nmin = (min < 10 ? \"0\" : \"\") + min;\nsec = (sec < 10 ? \"0\" : \"\") + sec;\n\nmsg.payload = hour + \":\" + min + \":\" + sec;\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 1600,
+        "y": 1000,
+        "wires": [
+            [
+                "baad3cdb.5b8d58"
+            ]
+        ]
+    },
+    {
+        "id": "baad3cdb.5b8d58",
+        "type": "ui_text",
+        "z": "199a2494.d44483",
+        "group": "4d0d0eb6.cfdf1",
+        "order": 3,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "label": "Bresser Letzte 10min-AVG Werte",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 2040,
+        "y": 1000,
+        "wires": []
+    },
+    {
+        "id": "e52715fe.b9702",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Taupunkt Variable schreiben",
+        "func": "global.set(\"Taupunkt\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2020,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3bfdb428.8d8e3c",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "MQTT_PVE2",
+        "broker": "192.168.1.20",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "6d9811b9.aafee",
+        "type": "ui_group",
+        "z": "",
+        "name": "Temperatur",
+        "tab": "615adc4e.b8b374",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "3d91d558.b0b642",
+        "type": "ui_group",
+        "z": "",
+        "name": "Temperatur",
+        "tab": "ebc25885.554eb",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "be69e0ff.5c8f3",
+        "type": "ui_group",
+        "z": "",
+        "name": "Luftfeuchte",
+        "tab": "ebc25885.554eb",
+        "order": 6,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "4d0d0eb6.cfdf1",
+        "type": "ui_group",
+        "z": "",
+        "name": "Status",
+        "tab": "ebc25885.554eb",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "9e770773.d8a92",
+        "type": "ui_group",
+        "z": "",
+        "name": "Luftfeuchte",
+        "tab": "615adc4e.b8b374",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "17baa071.c57db8",
+        "type": "influxdb",
+        "z": "",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "Wetter_Bresser",
+        "name": "Influx Wetter_Bresser",
+        "usetls": false,
+        "tls": ""
+    },
+    {
+        "id": "30d719a6.8689be",
+        "type": "ui_group",
+        "z": "",
+        "name": "Wind",
+        "tab": "ebc25885.554eb",
+        "order": 4,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "4ec81a48.48104c",
+        "type": "ui_group",
+        "z": "",
+        "name": "Wind",
+        "tab": "615adc4e.b8b374",
+        "order": 7,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "580799fe.f1c69",
+        "type": "ui_group",
+        "z": "",
+        "name": "Regen",
+        "tab": "ebc25885.554eb",
+        "order": 8,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "39eba35.13c6edc",
+        "type": "ui_group",
+        "z": "",
+        "name": "Regen",
+        "tab": "615adc4e.b8b374",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "615adc4e.b8b374",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Wetter außen Historie",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": true
+    },
+    {
+        "id": "ebc25885.554eb",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Wetter Außen",
+        "icon": "wb_sunny",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    }
+]

@@ -3,7 +3,8 @@ MQTT-Wetterstation mit Datenauswertung und -Darstellung in Node-Red sowie Aufzei
 
 Dieses Projekt besteht aus mehreren Teilen:
 
-## [Grundlagen: VEML 6070 Sensor, UV-Index Berechnung](VEML_6070/README.md)
+## 1. [Grundlagen: VEML 6070 Sensor, UV-Index Berechnung](VEML_6070/README.md)
+## 2. [Bresser Wetterstation MQTT-Anbindung mit RTL-433](rtl_433_Bresser/README.md)
 ## [Zusatzinfos: verwendete Berechnungsformeln](Berechnungsfunktionen.md)
 
 
