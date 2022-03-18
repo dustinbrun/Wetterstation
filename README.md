@@ -5,7 +5,8 @@ Dieses Projekt besteht aus mehreren Teilen:
 
 ## 1. [Grundlagen: VEML 6070 Sensor, UV-Index Berechnung](VEML_6070/README.md)
 ## 2. [Bresser Wetterstation MQTT-Anbindung mit RTL-433](rtl_433_Bresser/README.md)
-## [Zusatzinfos: verwendete Berechnungsformeln](Berechnungsfunktionen.md)
+## 3. [Erweiterung der Bresser Wetterstation: ESP8266-Wettersensoren](ESP8266/README.md)
+## 4. [Zusatzinfos: verwendete Berechnungsformeln](Berechnungsfunktionen.md)
 
 
 

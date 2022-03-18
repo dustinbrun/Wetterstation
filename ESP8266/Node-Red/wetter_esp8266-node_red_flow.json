@@ -1,0 +1,1130 @@
+[
+    {
+        "id": "5ed0ebdd.7cbf64",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "3d91d558.b0b642",
+        "order": 4,
+        "width": "0",
+        "height": "0",
+        "gtype": "gage",
+        "title": "Temperatur Boden",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": "-30",
+        "max": "50",
+        "colors": [
+            "#2701fe",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "0",
+        "seg2": "30",
+        "x": 3370,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "406503a2.daeadc",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "7494b3cf.d0a74c",
+        "name": "",
+        "measurement": "Temperatur_Boden",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 3430,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "9c98b1bb.fb81d8",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Temperatur_Boden Variable schreiben",
+        "func": "global.set(\"Temperatur_Boden\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3430,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d79cff0.07441",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "3d91d558.b0b642",
+        "order": 1,
+        "width": "6",
+        "height": "4",
+        "gtype": "gage",
+        "title": "Temperatur 2m",
+        "label": "°C",
+        "format": "{{value}}",
+        "min": "-30",
+        "max": "50",
+        "colors": [
+            "#2701fe",
+            "#00ff00",
+            "#ff0000"
+        ],
+        "seg1": "0",
+        "seg2": "30",
+        "x": 3360,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "6715fc67.d8be94",
+        "type": "mqtt out",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "wetter_außen/debug/reset",
+        "qos": "2",
+        "retain": "",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 2900,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "ebbb0fb5.75277",
+        "type": "inject",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 2590,
+        "y": 1460,
+        "wires": [
+            [
+                "6715fc67.d8be94"
+            ]
+        ]
+    },
+    {
+        "id": "42688c9a.facd34",
+        "type": "mqtt out",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "wetter_außen/debug/ping",
+        "qos": "2",
+        "retain": "",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 2890,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "fcad8152.9b7858",
+        "type": "inject",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "",
+        "payload": "Test123",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 2590,
+        "y": 1520,
+        "wires": [
+            [
+                "42688c9a.facd34"
+            ]
+        ]
+    },
+    {
+        "id": "8993cbba.1ec2a",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "wetter_außen/debug/pong",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 3170,
+        "y": 1520,
+        "wires": [
+            [
+                "f48f3cf4.ddbdf8"
+            ]
+        ]
+    },
+    {
+        "id": "f48f3cf4.ddbdf8",
+        "type": "debug",
+        "z": "199a2494.d44483",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "x": 3420,
+        "y": 1520,
+        "wires": []
+    },
+    {
+        "id": "458c4136.c0fd2",
+        "type": "mqtt out",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "wetter_außen/debug/wifi/ping",
+        "qos": "2",
+        "retain": "",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 2910,
+        "y": 1580,
+        "wires": []
+    },
+    {
+        "id": "e93fb63b.6bb27",
+        "type": "inject",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 2590,
+        "y": 1580,
+        "wires": [
+            [
+                "458c4136.c0fd2"
+            ]
+        ]
+    },
+    {
+        "id": "592f02aa.a2365c",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "wetter_außen/debug/wifi/pong",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 3180,
+        "y": 1580,
+        "wires": [
+            [
+                "4b207b14.b9f25c"
+            ]
+        ]
+    },
+    {
+        "id": "4b207b14.b9f25c",
+        "type": "debug",
+        "z": "199a2494.d44483",
+        "name": "",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 3420,
+        "y": 1580,
+        "wires": []
+    },
+    {
+        "id": "90e52a89.161278",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "14f81fa8.f62388",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "gtype": "gage",
+        "title": "",
+        "label": "hPa",
+        "format": "{{value}}",
+        "min": "950",
+        "max": "1050",
+        "colors": [
+            "#ff8000",
+            "#ff8000",
+            "#ff8000"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 3330,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "b085cd37.5c4a88",
+        "type": "ui_chart",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "3ef944d2.12c674",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Letzte 24 Stunden",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#ff8000",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 3370,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "67eae89e.1e2b",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "7494b3cf.d0a74c",
+        "name": "",
+        "measurement": "Luftdruck",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 3400,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "92107cbc.1dca",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Luftdruck Variable schreiben",
+        "func": "global.set(\"Luftdruck\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3400,
+        "y": 640,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6dbbdc1.12ec224",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "4db41b43.7059d4",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "gtype": "gage",
+        "title": "Helligkeit",
+        "label": "Lux",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "60000",
+        "colors": [
+            "#000000",
+            "#ff8000",
+            "#ffff00"
+        ],
+        "seg1": "400",
+        "seg2": "20000",
+        "x": 3340,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "848f6f38.48d858",
+        "type": "ui_chart",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "d98d05d0.b8df88",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "label": "Letzte 24 Stunden",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#ffff00",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 3370,
+        "y": 920,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "34e817e0.5bbb9",
+        "type": "ui_text",
+        "z": "199a2494.d44483",
+        "group": "4db41b43.7059d4",
+        "order": 2,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "label": "UV Index",
+        "format": "<h2>{{msg.payload}}</h2>",
+        "layout": "row-spread",
+        "x": 3660,
+        "y": 1120,
+        "wires": []
+    },
+    {
+        "id": "f897eaff.0b237",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "7494b3cf.d0a74c",
+        "name": "",
+        "measurement": "Helligkeit",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 3400,
+        "y": 960,
+        "wires": []
+    },
+    {
+        "id": "3cae17e7.2e57b",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Helligkeit_lux Variable schreiben",
+        "func": "global.set(\"Helligkeit_lux\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3410,
+        "y": 1000,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e37bd12e.d410b",
+        "type": "ui_text",
+        "z": "199a2494.d44483",
+        "group": "580799fe.f1c69",
+        "order": 1,
+        "width": "6",
+        "height": "1",
+        "name": "",
+        "label": "",
+        "format": "<h1>{{msg.payload}}</h1>",
+        "layout": "row-center",
+        "x": 3650,
+        "y": 1340,
+        "wires": []
+    },
+    {
+        "id": "c42c8b80.53376",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Zeitstempel erzeugen",
+        "func": "//Source: https://stackoverflow.com/questions/5416920/timestamp-to-human-readable-format\n\nvar date = new Date();\n\nvar hour = date.getHours();\nvar min = date.getMinutes();\nvar sec = date.getSeconds();\n\nhour = (hour < 10 ? \"0\" : \"\") + hour;\nmin = (min < 10 ? \"0\" : \"\") + min;\nsec = (sec < 10 ? \"0\" : \"\") + sec;\n\nmsg.payload = hour + \":\" + min + \":\" + sec;\nreturn msg;\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2980,
+        "y": 120,
+        "wires": [
+            [
+                "6c373692.b07208"
+            ]
+        ]
+    },
+    {
+        "id": "6c373692.b07208",
+        "type": "ui_text",
+        "z": "199a2494.d44483",
+        "group": "4d0d0eb6.cfdf1",
+        "order": 3,
+        "width": "0",
+        "height": "0",
+        "name": "",
+        "label": "ESP Letzte Nachricht",
+        "format": "{{msg.payload}}",
+        "layout": "row-spread",
+        "x": 3380,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "ad7dff31.03a018",
+        "type": "mqtt in",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "wetter_außen/get",
+        "qos": "2",
+        "datatype": "auto",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 2470,
+        "y": 240,
+        "wires": [
+            [
+                "f4a42f67.0a349"
+            ]
+        ]
+    },
+    {
+        "id": "f4a42f67.0a349",
+        "type": "json",
+        "z": "199a2494.d44483",
+        "name": "",
+        "property": "payload",
+        "action": "obj",
+        "pretty": false,
+        "x": 2710,
+        "y": 240,
+        "wires": [
+            [
+                "9fa4f870.2f035",
+                "3744f199.4ded6e",
+                "6c4e600b.ed8318",
+                "83e6a96c.7903b8",
+                "fc1b0870.80e528",
+                "384b64c9.4417ec",
+                "da163f76.6b4b6",
+                "c42c8b80.53376"
+            ]
+        ]
+    },
+    {
+        "id": "9fa4f870.2f035",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Temperatures",
+        "func": "var temp_2m = {};\nvar temp_0m = {};\n\ntemp_2m.topic = \"Temperatur_2m\";\ntemp_2m.payload = Math.round(msg.payload.temp_2m * 10) / 10;\n\ntemp_0m.topic = \"Temperatur_0m\";\ntemp_0m.payload = Math.round(msg.payload.temp_0m * 10) / 10;\n\nreturn [temp_2m, temp_0m];",
+        "outputs": 2,
+        "noerr": 0,
+        "x": 2960,
+        "y": 240,
+        "wires": [
+            [
+                "7833093a.8ea678",
+                "530c2e90.64e388",
+                "4f5132b0.5b63ac",
+                "d79cff0.07441"
+            ],
+            [
+                "5ed0ebdd.7cbf64",
+                "406503a2.daeadc",
+                "9c98b1bb.fb81d8",
+                "4f5132b0.5b63ac"
+            ]
+        ],
+        "outputLabels": [
+            "temp_2m",
+            "temp_0m"
+        ]
+    },
+    {
+        "id": "3744f199.4ded6e",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Pressure",
+        "func": "var pressure = {};\n\npressure.topic = \"Luftdruck\";\npressure.payload = Math.round(msg.payload.druck * 10) / 10;\n\nreturn pressure;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2940,
+        "y": 520,
+        "wires": [
+            [
+                "90e52a89.161278",
+                "b085cd37.5c4a88",
+                "67eae89e.1e2b",
+                "92107cbc.1dca"
+            ]
+        ],
+        "outputLabels": [
+            "Pressure"
+        ]
+    },
+    {
+        "id": "6c4e600b.ed8318",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Humidity",
+        "func": "var humidity = {};\n\nhumidity.topic = \"Luftfeuchte\";\nhumidity.payload = Math.round(msg.payload.feuchte * 10) / 10;\n\nreturn humidity;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2940,
+        "y": 740,
+        "wires": [
+            [
+                "5e9aaa36.fd2f84",
+                "c75654ff.d0c4e",
+                "2a5b6588.fca1da"
+            ]
+        ],
+        "outputLabels": [
+            "humidity"
+        ]
+    },
+    {
+        "id": "83e6a96c.7903b8",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Luminosity",
+        "func": "var lux = {};\n\nlux.topic = \"Helligkeit\";\nlux.payload = Math.round(msg.payload.helligkeit);\n\nreturn lux;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2950,
+        "y": 880,
+        "wires": [
+            [
+                "6dbbdc1.12ec224",
+                "848f6f38.48d858",
+                "3cae17e7.2e57b",
+                "f897eaff.0b237"
+            ]
+        ],
+        "outputLabels": [
+            "lux"
+        ]
+    },
+    {
+        "id": "fc1b0870.80e528",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Regen",
+        "func": "var regensensor = {};\n\nregensensor.topic = \"Regensensor\";\nregensensor.payload = Math.round(msg.payload.regensensor);\n\nreturn [regensensor];",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2930,
+        "y": 1260,
+        "wires": [
+            [
+                "1d57606a.9a61e",
+                "43011e28.46bda8",
+                "208fc2.f0eba83e"
+            ]
+        ],
+        "outputLabels": [
+            "regenmenge"
+        ]
+    },
+    {
+        "id": "baff03b1.39306",
+        "type": "inject",
+        "z": "199a2494.d44483",
+        "name": "Trigger 10 Minuten",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "str",
+        "repeat": "600",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 2480,
+        "y": 100,
+        "wires": [
+            [
+                "6e558bb.5478574"
+            ]
+        ]
+    },
+    {
+        "id": "6e558bb.5478574",
+        "type": "mqtt out",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "wetter_außen/set",
+        "qos": "",
+        "retain": "",
+        "broker": "3bfdb428.8d8e3c",
+        "x": 2750,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "642b01d8.d25e18",
+        "type": "comment",
+        "z": "199a2494.d44483",
+        "name": "Json format",
+        "info": "  Json format:\n  {\n  \"temp_2m\": 22.45,\n  \"temp_0m\": 12.45,\n  \"druck\": 1234.56,\n  \"feuchte\": 45.4,\n  \"helligkeit\": 12345.56,\n  \"regensensor\": \"256\",\n  \"uvsensor\" : \"1234\"  \n  }",
+        "x": 2450,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "384b64c9.4417ec",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "UV",
+        "func": "var uvsensor = {};\n\nuvsensor.topic = \"UV-Sensorwert\";\nuvsensor.payload = Math.round(msg.payload.uvsensor);\n\nreturn [uvsensor];",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 2930,
+        "y": 1120,
+        "wires": [
+            [
+                "65c0786e.27ee58",
+                "e692fd84.160a38",
+                "ac7b6659.7f7568",
+                "2b271260.8cf5c6"
+            ]
+        ],
+        "outputLabels": [
+            "regenmenge"
+        ]
+    },
+    {
+        "id": "65c0786e.27ee58",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "UV Messwert zu UV-Index",
+        "func": "function convert_to_risk_level(reading) \n{\n  var integration_time = 4;   //available for Integration-Time 1, 2, 4\n                              // MUST be adjusted according to the set integration time\n  reading = reading / integration_time;\n\n  var risk_level;\n\n  if(reading <= 560)\n      risk_level = \"Niedrig (UV 0-2)\";\n  else if(reading > 560 && reading <= 1120)\n      risk_level = \"Mittel (UV 3-5)\";\n  else if(reading > 1120 && reading <= 1494)\n      risk_level = \"Hoch (UV 6-7)\";\n  else if(reading > 1494 && reading <= 2054)\n      risk_level = \"Sehr Hoch (UV 8-10)\";\n  else if(reading > 2054 && reading <= 9999)\n      risk_level = \"Extrem (UV >10)\";\n  else\n      risk_level = \"ERROR\";\n\n  return risk_level;\n}\n\nmsg.payload = convert_to_risk_level(parseInt(msg.payload));\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3390,
+        "y": 1120,
+        "wires": [
+            [
+                "34e817e0.5bbb9"
+            ]
+        ]
+    },
+    {
+        "id": "da163f76.6b4b6",
+        "type": "debug",
+        "z": "199a2494.d44483",
+        "name": "",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "x": 2950,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "2cdd7f42.655348",
+        "type": "inject",
+        "z": "199a2494.d44483",
+        "name": "",
+        "topic": "",
+        "payload": "1",
+        "payloadType": "str",
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "x": 2430,
+        "y": 60,
+        "wires": [
+            [
+                "6e558bb.5478574"
+            ]
+        ]
+    },
+    {
+        "id": "7833093a.8ea678",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "7494b3cf.d0a74c",
+        "name": "",
+        "measurement": "Temperatur_2m",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 3420,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "5e9aaa36.fd2f84",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "7494b3cf.d0a74c",
+        "name": "",
+        "measurement": "Luftfeuchte_rel",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 3420,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "530c2e90.64e388",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Temperatur_2m Variable schreiben",
+        "func": "global.set(\"Temperatur_2m\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3420,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c75654ff.d0c4e",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Luftfeuchte_rel Variable schreiben",
+        "func": "global.set(\"Luftfeuchte_rel\", msg.payload);\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3420,
+        "y": 780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e692fd84.160a38",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "4db41b43.7059d4",
+        "order": 1,
+        "width": "0",
+        "height": "0",
+        "gtype": "gage",
+        "title": "UV-Intensität",
+        "label": "",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "20000",
+        "colors": [
+            "#00ff00",
+            "#ff0000",
+            "#8000ff"
+        ],
+        "seg1": "2000",
+        "seg2": "6000",
+        "x": 3350,
+        "y": 1160,
+        "wires": []
+    },
+    {
+        "id": "32bd19ff.f7d46e",
+        "type": "ui_gauge",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "580799fe.f1c69",
+        "order": 3,
+        "width": "0",
+        "height": "0",
+        "gtype": "gage",
+        "title": "Regensensor",
+        "label": "%",
+        "format": "{{value}}",
+        "min": "0",
+        "max": "100",
+        "colors": [
+            "#ff8000",
+            "#ff8000",
+            "#ff8000"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "x": 3350,
+        "y": 1260,
+        "wires": []
+    },
+    {
+        "id": "9e1a094e.3cb988",
+        "type": "ui_chart",
+        "z": "199a2494.d44483",
+        "name": "",
+        "group": "39eba35.13c6edc",
+        "order": 4,
+        "width": 0,
+        "height": 0,
+        "label": "Regensensor",
+        "chartType": "line",
+        "legend": "false",
+        "xformat": "HH:mm:ss",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": false,
+        "ymin": "",
+        "ymax": "",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "useOldStyle": false,
+        "outputs": 1,
+        "x": 3350,
+        "y": 1300,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1d57606a.9a61e",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "Regen Messwert zu Text",
+        "func": "function convert_to_text(reading) \n{\n  var regen;\n\n  if (reading < 512) \n  {\n    regen = \"Starker Regen\";\n  }\n  else if (reading < 780) \n  {\n    regen = \"Leichter Regen\";\n  }\n  else \n  {\n    regen = \"Kein Regen\";\n  }\n  return regen;\n}\n\nmsg.payload = convert_to_text(parseInt(msg.payload));\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3390,
+        "y": 1340,
+        "wires": [
+            [
+                "e37bd12e.d410b"
+            ]
+        ]
+    },
+    {
+        "id": "ac7b6659.7f7568",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "7494b3cf.d0a74c",
+        "name": "",
+        "measurement": "UV_Raw",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 3400,
+        "y": 1200,
+        "wires": []
+    },
+    {
+        "id": "43011e28.46bda8",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "map in %",
+        "func": "function map(x, in_min, in_max, out_min, out_max) {\n  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;\n}\n\nmsg.payload = Math.round(map(parseInt(msg.payload), 250, 1024, 100, 0));\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3180,
+        "y": 1260,
+        "wires": [
+            [
+                "32bd19ff.f7d46e",
+                "9e1a094e.3cb988"
+            ]
+        ]
+    },
+    {
+        "id": "208fc2.f0eba83e",
+        "type": "influxdb out",
+        "z": "199a2494.d44483",
+        "influxdb": "7494b3cf.d0a74c",
+        "name": "",
+        "measurement": "Regensensor",
+        "precision": "s",
+        "retentionPolicy": "",
+        "x": 3410,
+        "y": 1380,
+        "wires": []
+    },
+    {
+        "id": "2b271260.8cf5c6",
+        "type": "function",
+        "z": "199a2494.d44483",
+        "name": "UV Messwert zu UV-Index kurz + Variable UV_Index_kurz schreiben",
+        "func": "function convert_to_risk_level_short(reading) \n{\n  var integration_time = 4;   //available for Integration-Time 1, 2, 4\n                              // MUST be adjusted according to the set integration time\n  reading = reading / integration_time;\n\n  var risk_level;\n\n  if(reading <= 560)\n      risk_level = \"0-2\";\n  else if(reading > 560 && reading <= 1120)\n      risk_level = \"3-5\";\n  else if(reading > 1120 && reading <= 1494)\n      risk_level = \"6-7\";\n  else if(reading > 1494 && reading <= 2054)\n      risk_level = \"8-10\";\n  else if(reading > 2054 && reading <= 9999)\n      risk_level = \">10\";\n  else\n      risk_level = \"ERROR\";\n\n  return risk_level;\n}\n\nglobal.set(\"UV_Index_kurz\", convert_to_risk_level_short(parseInt(msg.payload)));\n",
+        "outputs": 1,
+        "noerr": 0,
+        "x": 3530,
+        "y": 1080,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3d91d558.b0b642",
+        "type": "ui_group",
+        "z": "",
+        "name": "Temperatur",
+        "tab": "ebc25885.554eb",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "7494b3cf.d0a74c",
+        "type": "influxdb",
+        "z": "",
+        "hostname": "127.0.0.1",
+        "port": "8086",
+        "protocol": "http",
+        "database": "WEATHER",
+        "name": "Influx_WEATHER",
+        "usetls": false,
+        "tls": ""
+    },
+    {
+        "id": "3bfdb428.8d8e3c",
+        "type": "mqtt-broker",
+        "z": "",
+        "name": "MQTT_PVE2",
+        "broker": "192.168.1.20",
+        "port": "1883",
+        "clientid": "",
+        "usetls": false,
+        "compatmode": true,
+        "keepalive": "60",
+        "cleansession": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthPayload": "",
+        "closeTopic": "",
+        "closeQos": "0",
+        "closePayload": "",
+        "willTopic": "",
+        "willQos": "0",
+        "willPayload": ""
+    },
+    {
+        "id": "14f81fa8.f62388",
+        "type": "ui_group",
+        "z": "",
+        "name": "Luftdruck",
+        "tab": "ebc25885.554eb",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "3ef944d2.12c674",
+        "type": "ui_group",
+        "z": "",
+        "name": "Luftdruck",
+        "tab": "615adc4e.b8b374",
+        "order": 3,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "4db41b43.7059d4",
+        "type": "ui_group",
+        "z": "",
+        "name": "Licht",
+        "tab": "ebc25885.554eb",
+        "order": 7,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "d98d05d0.b8df88",
+        "type": "ui_group",
+        "z": "",
+        "name": "Helligkeit",
+        "tab": "615adc4e.b8b374",
+        "order": 6,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "580799fe.f1c69",
+        "type": "ui_group",
+        "z": "",
+        "name": "Regen",
+        "tab": "ebc25885.554eb",
+        "order": 8,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "4d0d0eb6.cfdf1",
+        "type": "ui_group",
+        "z": "",
+        "name": "Status",
+        "tab": "ebc25885.554eb",
+        "order": 2,
+        "disp": true,
+        "width": "6",
+        "collapse": true
+    },
+    {
+        "id": "39eba35.13c6edc",
+        "type": "ui_group",
+        "z": "",
+        "name": "Regen",
+        "tab": "615adc4e.b8b374",
+        "order": 5,
+        "disp": true,
+        "width": "6",
+        "collapse": false
+    },
+    {
+        "id": "ebc25885.554eb",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Wetter Außen",
+        "icon": "wb_sunny",
+        "order": 1,
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "615adc4e.b8b374",
+        "type": "ui_tab",
+        "z": "",
+        "name": "Wetter außen Historie",
+        "icon": "dashboard",
+        "order": 3,
+        "disabled": false,
+        "hidden": true
+    }
+]
